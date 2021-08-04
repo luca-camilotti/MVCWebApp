@@ -47,7 +47,7 @@ import luke.database.helper.DBHelper;
 public class Controller extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	//private String template;
-	private DBHelper dbh;
+	private DBHelper dbh;  // db helper to perform database operations
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -57,18 +57,21 @@ public class Controller extends HttpServlet {
         // TODO Auto-generated constructor stub
     }
     
-    /* Utility: get the filename to upload */
-    private static String getSubmittedFileName(Part part) {
-        for (String cd : part.getHeader("content-disposition").split(";")) {
-            if (cd.trim().startsWith("filename")) {
-                String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
-                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1); // MSIE fix.
-            }
-        }
-        return null;
+    /* TOAST AND SESSION MESSAGES */
+    
+    /* Store a message in session: sometimes the session must be deleted
+     * and you want to redirect to another web page showing a toast message;
+     * since the request object does not survive when you redirect, the only
+     * way to store a message is to put it in the new session and then move
+     * it to the request of the redirected page */
+    private void setSessionMessage(HttpSession sessione, String message) {
+    	if (sessione != null) {
+			sessione.setAttribute("message", message);			
+			
+    	}
     }
     
-    /* get the session message and store (append) it into request as attribute,
+    /* Get the session message and store (or append) it to the request as attribute,
      * then delete it from session */
     private void appendSessionMessage(HttpSession sessione, HttpServletRequest request) {
     	if (sessione.getAttribute("message") != null) {
@@ -78,17 +81,11 @@ public class Controller extends HttpServlet {
 				message = (String) request.getAttribute("message") +"<br>"+ message;
 			request.setAttribute("message", message);
     	}
-    }
-    /* store a message in session */
-    private void setSessionMessage(HttpSession sessione, String message) {
-    	if (sessione != null) {
-			sessione.setAttribute("message", message);			
-			
-    	}
-    }
+    }    
     
     
-    /* append a message to request "message" attribute,
+    /* Append a message to a request as "message" attribute,
+     * and show it as a toast in the web page
      */
     private void ToastMessage(String message, HttpServletRequest request) {
     	if(request.getAttribute("message")!= null) {
@@ -99,6 +96,8 @@ public class Controller extends HttpServlet {
     	request.setAttribute("message", message);    
     }
     
+    /* USER AUTHENTICATION */
+    
     /* Check if user is logged */
     private boolean isLogged(HttpSession sessione) {
     	boolean logged = false;
@@ -107,31 +106,7 @@ public class Controller extends HttpServlet {
 		return logged;
     }
     
-    /* logon user - DEPRECATED */
-    /*
-    private void logon(HttpSession sessione, String username, String surname, String email) {
-    	if(sessione != null) {
-    		sessione.setAttribute("user", username);
-    		sessione.setAttribute("surname", surname);
-    		sessione.setAttribute("email", email);
-    		sessione.setAttribute("logged", true);
-    	}
-    } */
-    /* logoff user */
-    private void logff(HttpSession sessione, HttpServletRequest request) {
-    	if(sessione != null) 
-    		sessione.invalidate();
-    	
-    	// sessione = request.getSession();
-    }
-    /* forward to a specific jsp file */
-    private void gotoJsp(String jsp, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  {
-    	//RequestDispatcher disp = request.getRequestDispatcher("WEB-INF/"+jsp);
-    	RequestDispatcher disp = request.getRequestDispatcher("/WEB-INF/"+jsp);  // original
-		// forward request to jsp file (view)
-		disp.forward(request, response);
-    }
-    
+    /* User Login */
     /* Effettua l'autenticazione e salva le informazioni dell'utente in sessione */
     private void logon(HttpSession sessione, HttpServletRequest request, HttpServletResponse response) throws SQLException, NullPointerException, Exception  {
     	/* Lettura Parametri */
@@ -150,7 +125,23 @@ public class Controller extends HttpServlet {
 			
 		}
     }
-        
+    
+    /* User Logout */
+    private void logff(HttpSession sessione, HttpServletRequest request) {
+    	if(sessione != null) 
+    		sessione.invalidate();    	
+    	// sessione = request.getSession();  // not necessary here
+    }
+    
+    /* REQUEST DISPATCHER */
+    
+    /* Forward the http request to a specific jsp file */
+    private void gotoJsp(String jsp, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException  {
+    	//RequestDispatcher disp = request.getRequestDispatcher("WEB-INF/"+jsp);
+    	RequestDispatcher disp = request.getRequestDispatcher("/WEB-INF/"+jsp);  // original
+		// forward request to jsp file (view)
+		disp.forward(request, response);
+    }        
     
 	/**
 	 * @see Servlet#init(ServletConfig)
@@ -159,7 +150,7 @@ public class Controller extends HttpServlet {
 		// TODO Auto-generated method stub
 		super.init(config);
 		try {
-			dbh = new DBHelper();
+			dbh = new DBHelper();  // db helper to perform database operations
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -196,7 +187,7 @@ public class Controller extends HttpServlet {
 			
 			switch(url[0].trim()) {
 			
-			case "template": // template page
+			case "template": // template page test
 				request.setAttribute("title", "template");  // page title
 				ToastMessage("Template Page", request);
 				
@@ -206,6 +197,13 @@ public class Controller extends HttpServlet {
 				dbh.disconnect();			
 				
 				
+				gotoJsp(url[0].trim()+".jsp", request, response);
+				break;
+			case "error": // error page test
+				request.setAttribute("title", "error");  // page title
+				ToastMessage("Error Page", request);
+				
+								
 				gotoJsp(url[0].trim()+".jsp", request, response);
 				break;
 			case "login":
@@ -243,38 +241,32 @@ public class Controller extends HttpServlet {
 			}
 			
 		/* Exception Handling */	
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			//request.setAttribute("message", "URL PARSING: "+e.getMessage());
+		} catch (NumberFormatException e) {			
+			e.printStackTrace();			
 			ToastMessage("Number Format Exception: "+e.getMessage(), request);
 			gotoJsp("error.jsp", request, response);
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			//request.setAttribute("message", "URL PARSING: "+e.getMessage());
+		} catch (ParseException e) {			
+			e.printStackTrace();			
 			ToastMessage("Parse Exception: "+e.getMessage(), request);
 			gotoJsp("error.jsp", request, response);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			//request.setAttribute("message", "URL PARSING: "+e.getMessage());
+		} catch (SQLException e) {			
+			e.printStackTrace();			
 			ToastMessage("SQL Exception: "+e.getMessage(), request);
 			gotoJsp("error.jsp", request, response);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-			//request.setAttribute("message", "URL PARSING: "+e.getMessage());
+			e.printStackTrace();			
 			ToastMessage("Encryption Exception: invalid key; "+e.getMessage(), request);
 			gotoJsp("error.jsp", request, response);		
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-			//request.setAttribute("message", "URL PARSING: "+e.getMessage());
-			ToastMessage("ClassNotFound Exception: "+e.getMessage(), request);
+			e.printStackTrace();			
+			ToastMessage("Class Not Found Exception: "+e.getMessage(), request);
 			gotoJsp("error.jsp", request, response);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			//request.setAttribute("message", "URL PARSING: "+e.getMessage());
+		} catch (NullPointerException e) {
+			e.printStackTrace();			
+			ToastMessage("Null Pointer Exception: "+e.getMessage(), request);
+			gotoJsp("error.jsp", request, response);
+		} catch (Exception e) {			
+			e.printStackTrace();			
 			ToastMessage("Exception: "+e.getMessage(), request);
 			gotoJsp("error.jsp", request, response);
 		}		

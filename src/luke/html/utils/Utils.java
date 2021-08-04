@@ -2,7 +2,21 @@ package luke.html.utils;
 
 import java.util.ArrayList;
 
+import javax.servlet.http.Part;
+
 public class Utils {
+	
+	
+	/* Utility: get the filename to upload */
+    private static String getSubmittedFileName(Part part) {
+        for (String cd : part.getHeader("content-disposition").split(";")) {
+            if (cd.trim().startsWith("filename")) {
+                String fileName = cd.substring(cd.indexOf('=') + 1).trim().replace("\"", "");
+                return fileName.substring(fileName.lastIndexOf('/') + 1).substring(fileName.lastIndexOf('\\') + 1); // MSIE fix.
+            }
+        }
+        return null;
+    }
 
 	/* restituisce le opzioni da inserire negli elementi select */
 	public static String printSelectOptions(ArrayList<String> list, String selected) {

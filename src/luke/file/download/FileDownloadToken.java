@@ -1,4 +1,4 @@
-package luke.app.controller;
+package luke.file.download;
 
 import java.io.IOException;
 import java.io.InputStream;
