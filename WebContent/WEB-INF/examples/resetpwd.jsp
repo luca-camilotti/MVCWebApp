@@ -4,7 +4,7 @@
     import="luke.models.classes.UploadItem"   
     import="luke.date.converter.DateConverter" 
     import="luke.models.classes.User"  
-    import="luke.ads.martino.AppConfig" 
+    import="luke.app.controller.AppConfig" 
 %>
 
 <%! private String commentModal = "//";

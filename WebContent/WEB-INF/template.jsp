@@ -29,6 +29,8 @@
 </jsp:include>
 
 
+<!-- Put page content here: -->
+
 <!-- Bootstrap Sign in form -->
 <div class="container-fluid">
 
@@ -85,6 +87,8 @@
 </div>
 </div>
 </div>
+
+<!-- Page content end -->
 
 </body>
 </html>
