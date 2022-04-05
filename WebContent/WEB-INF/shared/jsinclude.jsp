@@ -9,23 +9,23 @@
 
 <!-- Jquery -->
 
-<script src='${context}/js/jquery-3.6.0.min.js' type='text/javascript'></script>
+<script src='js/jquery-3.6.0.min.js' type='text/javascript'></script>
 
 <!-- Bootstrap -->
 
-<script src='${context}/js/bootstrap/bootstrap.bundle.min.js' type='text/javascript'></script>
+<script src='js/bootstrap/bootstrap.bundle.min.js' type='text/javascript'></script>
 
 
 <!-- Bootstrap Datepicker Js -->
 
 <!-- https://makitweb.com/how-to-add-datepicker-in-bootstrap/ -->
 <!-- https://bootstrap-datepicker.readthedocs.io/en/latest/ -->
-<script src='${context}/js/bootstrap-datepicker.min.js' type='text/javascript'></script>
-<script src='${context}/locales/bootstrap-datepicker.it.min.js' type='text/javascript'></script>
+<script src='js/bootstrap-datepicker.min.js' type='text/javascript'></script>
+<script src='locales/bootstrap-datepicker.it.min.js' type='text/javascript'></script>
 
 <!-- Show Hide Password Plugin -->
 <!-- https://www.jqueryscript.net/form/jQuery-Plugin-To-Show-Hidden-Password-In-Password-Field-inputShowPwd.html -->
-<script src='${context}/js/showhide.js' type='text/javascript'></script>
+<script src='js/showhide.js' type='text/javascript'></script>
 
 <!-- My Shared Scripts -->
-<script src='${context}/js/mysharedscript.js' type='text/javascript'></script>
+<script src='js/mysharedscript.js' type='text/javascript'></script>

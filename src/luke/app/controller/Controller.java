@@ -40,7 +40,13 @@ import luke.database.helper.DBHelper;
  * Servlet implementation class Demo
  * @MultipartConfig: for file upload
  * 
- * This Servlet is the appkication controller
+ * This Servlet is the application controller
+ * 
+ * Github:
+ * https://github.com/luca-camilotti/MVCWebApp
+ * 
+ * Base local URL:
+ * http://localhost:8080/MVCJEEwebApp/App
  */
 @WebServlet("/App/*")
 // @MultipartConfig(maxFileSize = 16177215)    // upload file's size up to 16MB
@@ -165,11 +171,11 @@ public class Controller extends HttpServlet {
 		/* Session */
 		HttpSession sessione = request.getSession();
 		sessione.setMaxInactiveInterval(AppConfig.sessionTime);  // sec, session life time 
-		appendSessionMessage(sessione, request); // copia i messaggi salvati in sessione nella request
+		appendSessionMessage(sessione, request); // copia dei messaggi salvati in sessione nella request (verranno visualizzati automaticamente in un toast)
 		
 		/* Application path */
 		String context = getServletContext().getContextPath();
-		request.setAttribute("context", context); // il path va inviato alla jsp per ottenere gli url corretti
+		request.setAttribute("context", context); // il path viene inviato alla jsp per ottenere gli url corretti nei vari link
 		
 		/* Extract resource url */
 		String[] url;
@@ -240,7 +246,7 @@ public class Controller extends HttpServlet {
 				}
 			}
 			
-		/* Exception Handling */	
+		/* Exception Handling and error page management */	
 		} catch (NumberFormatException e) {			
 			e.printStackTrace();			
 			ToastMessage("Number Format Exception: "+e.getMessage(), request);

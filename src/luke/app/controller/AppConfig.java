@@ -64,7 +64,7 @@ public class AppConfig {
 	public static final String DBDRIVER = "com.mysql.jdbc.Driver";  // old driver name
 	public static final String DBurl = "jdbc:mysql://localhost:3306/azienda"; //?characterEncoding=utf8";
 	public static final String DBuser = "root";
-	public static final String DBpwd = ""; 
+	public static final String DBpwd = "root"; 
 	
 	public static final String appBaseUrl = "localhost:8080";
 	
